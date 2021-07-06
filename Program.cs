@@ -3,6 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+
+// read file
+// sorting
+// Step 1: Sort all the last name
+// if all the last names different with each other, done
+// if repetitation exist, compare the first name
+// if first names equal, compare second name
+// if second names equal, compare third name
+// write file
 class Program
 {
 
@@ -23,10 +32,9 @@ class Program
             .Select((f, i) => new { f, i })
             .Where(x => x.f == name)
             .Select(x => x.i);
-        Console.WriteLine("Indices of specific name: " + String.Join(",", indexes));
+        Console.WriteLine(String.Join(",", indexes));
         return indexes.ToArray();
     }
-
 
     static String[] GetDistinctNames(String[] names)
     {
@@ -85,7 +93,7 @@ class Program
         List<int> sorted_index = sorted.Select(x => x.Value).ToList();
 
 
-        // get the orignal indexes of sorted last names, add the value to sorted list
+        // get the orignal indexes of sorted last names, add the value to a list
         for (int i = 0; i < count_names; i++)
         {
             int original_index = sorted_index[i];
@@ -105,9 +113,10 @@ class Program
         foreach (String name in distinct_names)
         {
             System.Console.WriteLine("****************************************************************");
-
+            System.Console.WriteLine("To sort name ->>" + name);
+            System.Console.WriteLine("Original indexes ->>");
             raw_indexes = FindIndexes(last_names, name);
-            System.Console.WriteLine("To sort name: " + name);
+
             first_names = new List<String>();
             foreach (int index in raw_indexes)
             {
@@ -126,40 +135,15 @@ class Program
             List<String> B = sorted2.Select(x => x.Key).ToList();
             List<int> sorted_index2 = sorted2.Select(x => x.Value).ToList();
 
-            
-            System.Console.WriteLine("================================");
-            PrintResults(sorted_names);
-
             for (int i = 0; i < raw_indexes.Length; i++)
             {
-                
                 sorted_names[new_indexes[i]] = B[i];
             }
 
-            // System.Console.WriteLine("////////////////////////////////");
-            // foreach (String s in B)
-            // {
-            //     System.Console.WriteLine(s);
-            // }
-            // foreach (int s in sorted_index2)
-            // {
-            //     System.Console.WriteLine(s);
-            //     System.Console.WriteLine(B[sorted_index2[s]]);
-            // }
         }
 
-
-        // read file
-
-        // sorting
-        // Step 1: Sort all the last name
-        // if all the last names different with each other, done
-
-        // if repetitation exist, compare the first name
-        // if first names equal, compare second name
-        // if second names equal, compare third name
-
-        // write file
+        System.Console.WriteLine("================================");
+        PrintResults(sorted_names);
     }
 }
 
