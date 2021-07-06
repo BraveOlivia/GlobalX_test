@@ -38,6 +38,16 @@ class Program
         return distinctNames.ToArray();
     }
 
+    // print the sorted result and write to a file
+    static void PrintResults(String[] sorted_names)
+    {
+        foreach (String name in sorted_names)
+        {
+            Console.WriteLine(name);
+            File.WriteAllLines("sorted-names-list.txt", sorted_names);
+        }
+    }
+
     static void Main(string[] args)
     {
         System.Console.WriteLine(args[0]);
@@ -71,7 +81,7 @@ class Program
             .OrderBy(x => x.Key)
             .ToList();
 
-        // List<String> B = sorted.Select(x => x.Key).ToList();
+        List<String> sorted_last_names = sorted.Select(x => x.Key).ToList();
         List<int> sorted_index = sorted.Select(x => x.Value).ToList();
 
 
@@ -79,68 +89,64 @@ class Program
         for (int i = 0; i < count_names; i++)
         {
             int original_index = sorted_index[i];
-            sorted_names[i] = unsorted_names[original_index];
+            String orignal_name = unsorted_names[original_index];
+            sorted_names[i] = orignal_name;
         }
 
-        // print the sorted result and write to a file
-        foreach (String name in sorted_names)
-        {
-            Console.WriteLine(name);
-            File.WriteAllLines("sorted-names-list.txt", sorted_names);
-        }
 
         // find duplication indexes of last names
         FindAllDuplicateIndexes(last_names);
 
-        String[] unsorted = GetDistinctNames(last_names);
-        int[] indexes;
-        List<String> first_names = new List<String>();
+        String[] distinct_names = GetDistinctNames(last_names);
+        int[] raw_indexes;
+        int[] new_indexes;
+        List<String> first_names;
 
-        foreach (String name in unsorted)
+        foreach (String name in distinct_names)
         {
-            indexes = FindIndexes(last_names, name);
+            System.Console.WriteLine("****************************************************************");
+
+            raw_indexes = FindIndexes(last_names, name);
             System.Console.WriteLine("To sort name: " + name);
-            foreach(int index in indexes){
+            first_names = new List<String>();
+            foreach (int index in raw_indexes)
+            {
                 System.Console.WriteLine(unsorted_names[index]);
                 first_names.Add(unsorted_names[index]);
             }
+            System.Console.WriteLine("new_indexes ->>");
+            new_indexes = FindIndexes(sorted_last_names.ToArray(), name);
+
             string[] unsorted_first_names = first_names.ToArray();
+            var sorted2 = unsorted_first_names
+            .Select((x, i) => new KeyValuePair<string, int>(x, i))
+            .OrderBy(x => x.Key)
+            .ToList();
 
+            List<String> B = sorted2.Select(x => x.Key).ToList();
+            List<int> sorted_index2 = sorted2.Select(x => x.Value).ToList();
+
+            
+            System.Console.WriteLine("================================");
+            PrintResults(sorted_names);
+
+            for (int i = 0; i < raw_indexes.Length; i++)
+            {
+                
+                sorted_names[new_indexes[i]] = B[i];
+            }
+
+            // System.Console.WriteLine("////////////////////////////////");
+            // foreach (String s in B)
+            // {
+            //     System.Console.WriteLine(s);
+            // }
+            // foreach (int s in sorted_index2)
+            // {
+            //     System.Console.WriteLine(s);
+            //     System.Console.WriteLine(B[sorted_index2[s]]);
+            // }
         }
-
-        System.Console.WriteLine("****************************************************************");
-
-        // duplicateIndexes.ToList().ForEach(i => System.Console.WriteLine(i));
-
-        
-        // duplicateIndexes.ToList().ForEach(i => first_names.Add(unsorted_names[i]));
-        // string[] unsorted_first_names = first_names.ToArray();
-
-        // System.Console.WriteLine("unsorted first names: ");
-        // foreach (string name in unsorted_first_names)
-        // {
-        //     System.Console.WriteLine(name);
-        // }
-
-        // var sorted2 = unsorted_first_names
-        //     .Select((x, i) => new KeyValuePair<string, int>(x, i))
-        //     .OrderBy(x => x.Key)
-        //     .ToList();
-
-        // List<String> B = sorted2.Select(x => x.Key).ToList();
-        // List<int> sorted_index2 = sorted2.Select(x => x.Value).ToList();
-
-        // get the orignal indexes of sorted last names, add the value to sorted list
-        // for (int y = 0; y < i; y++)
-        // {
-        //     int original_index = sorted_index2[y];
-        //     sorted_names[original_index] = sorted_names[original_index];
-        // }
-        // foreach (String s in B)
-        // {
-        //     System.Console.WriteLine(s);
-        // }
-
 
 
         // read file
