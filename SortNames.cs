@@ -23,7 +23,7 @@ namespace GlobalX
             return indexes.ToArray();
         }
 
-
+        // Get all the duplicated names in the given name array
         public static String[] GetDistinctNames(String[] names)
         {
             var distinctNames = names.GroupBy(x => x)
@@ -44,6 +44,7 @@ namespace GlobalX
             }
         }
 
+        // Invoke the program when command line input is correct and the file exists
         public static StreamReader ValidateInput(String arg1, String arg2)
         {
             if (arg1 == "name-sorter" && arg2.Substring(0, 2) == "./")
@@ -61,19 +62,24 @@ namespace GlobalX
             return null;
         }
 
-        public static Tuple<List<String>, int> LoadData(StreamReader file)
+        // Load the data from given file, store all the data into a list, return the list
+        public static List<String> LoadData(StreamReader file)
         {
             List<String> unsorted_names = new List<String>();
 
-            int count_names = 0;
             String line = file.ReadLine();
             while (line != null)
             {
                 unsorted_names.Add(line);
-                count_names++;
                 line = file.ReadLine();
             }
-            return Tuple.Create(unsorted_names, count_names);
+            return unsorted_names;
+        }
+
+        // Get the size of the given list
+        public static int GetSize(List<String> names)
+        {
+            return names.Count;
         }
 
         // Sort the given array, return the sorted array and the sorted indexes array
@@ -90,11 +96,13 @@ namespace GlobalX
             return Tuple.Create(sorted_names, sorted_index);
         }
 
-        public static string[] GetLastNames(int count_names, List<String> unsorted_names)
+        // Get all the last names from given name list, return the result as an array
+        public static string[] GetLastNames(List<String> unsorted_names)
         {
-            string[] last_names = new string[count_names];
+            int size = GetSize(unsorted_names);
+            string[] last_names = new string[size];
 
-            for (int i = 0; i < count_names; i++)
+            for (int i = 0; i < size; i++)
             {
                 String name = unsorted_names[i];
                 string[] words = name.Split(" ");
@@ -102,36 +110,39 @@ namespace GlobalX
             }
             return last_names;
         }
-        public static string[] GetFirstNames(int count_names, List<String> unsorted_names)
+
+        public static string[] GetSortedNames(string[] last_names, List<String> unsorted_names)
         {
-            string[] first_names = new string[count_names];
-
-            for (int i = 0; i < count_names; i++)
-            {
-                String name = unsorted_names[i];
-                string[] words = name.Split(" ");
-                first_names[i] = words[words.Length - 1];
-            }
-            return first_names;
-        }
-
-        static void Main(string[] args)
-        {
-            StreamReader file = ValidateInput(args[0], args[1]);
-            (List<String> unsorted_names, int count_names) = LoadData(file);
-
-            // Get all last names as an array, sort them
-            string[] last_names = GetLastNames(count_names, unsorted_names);
             (List<String> sorted_last_names, List<int> sorted__last_index) = Sorting(last_names);
 
-            // save the sorting results into a new array
-            string[] sorted_names = new string[count_names];
-            for (int i = 0; i < count_names; i++)
+            int size = GetSize(unsorted_names);
+            string[] sorted_names = new string[size];
+
+            for (int i = 0; i < size; i++)
             {
                 int original_index = sorted__last_index[i];
                 String orignal_name = unsorted_names[original_index];
                 sorted_names[i] = orignal_name;
             }
+            return sorted_names;
+        }
+
+        static void Main(string[] args)
+        {
+            StreamReader file = ValidateInput(args[0], args[1]);
+
+            List<String> unsorted_names = LoadData(file);
+            int size = GetSize(unsorted_names);
+
+            // Get all last names as an array, sort them
+            string[] last_names = GetLastNames(unsorted_names);
+
+            (List<String> sorted_last_names, List<int> sorted__last_index) = Sorting(last_names);
+
+            string[] sorted_names = GetSortedNames(last_names, unsorted_names);
+
+
+
 
             String[] distinct_last_names = GetDistinctNames(last_names);
 
